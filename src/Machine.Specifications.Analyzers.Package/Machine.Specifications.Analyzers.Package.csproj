@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Machine.Specifications is a Context/Specification framework geared towards removing language noise and simplifying tests.</Description>
+    <Authors>Machine Specifications</Authors>
+    <PackageTags>test;unit;testing;context;specification;bdd;tdd;mspec;analyzers;roslyn</PackageTags>
+    <PackageReleaseNotes>https://github.com/machine/machine.specifications/releases</PackageReleaseNotes>
+    <PackageIcon>machine.png</PackageIcon>
+    <PackageProjectUrl>http://github.com/machine/machine.specifications</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Machine.Specifications.Analyzers.CodeFixes\Machine.Specifications.Analyzers.CodeFixes.csproj" />
+    <ProjectReference Include="..\Machine.Specifications.Analyzers\Machine.Specifications.Analyzers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="machine.png" Pack="true" PackagePath="" />
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\Machine.Specifications.Analyzers.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\Machine.Specifications.Analyzers.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>
