@@ -17,16 +17,13 @@ namespace Machine.Specifications.Analyzers.Tests
 
         private const string FileName = "/0/Test0.cs";
 
+        private readonly ImmutableArray<DiagnosticAnalyzer> analyzers = ImmutableArray.Create<DiagnosticAnalyzer>(new TAnalyzer());
+
         protected IVerifier Verifier { get; } = new Verifier();
 
         public string TestCode { get; set; }
 
         public List<DiagnosticResult> ExpectedDiagnostics { get; } = new List<DiagnosticResult>();
-
-        protected IEnumerable<DiagnosticAnalyzer> GetDiagnosticAnalyzers()
-        {
-            return new[] {new TAnalyzer()};
-        }
 
         public virtual async Task RunAsync(CancellationToken cancellationToken = default)
         {
@@ -39,11 +36,10 @@ namespace Machine.Specifications.Analyzers.Tests
 
         protected Project CreateProject()
         {
-            var compilation = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true);
+            var compilation = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             var parse = new CSharpParseOptions(LanguageVersion.Default, DocumentationMode.Diagnose);
 
             var projectId = ProjectId.CreateNewId(ProjectFileName);
-            var documentId = DocumentId.CreateNewId(projectId, FileName);
 
             var solution = new AdhocWorkspace()
                 .CurrentSolution
@@ -51,28 +47,22 @@ namespace Machine.Specifications.Analyzers.Tests
                 .WithProjectCompilationOptions(projectId, compilation)
                 .WithProjectParseOptions(projectId, parse)
                 .AddMetadataReference(projectId, MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-                .AddDocument(documentId, FileName, SourceText.From(TestCode), filePath: FileName);
+                .AddDocument(DocumentId.CreateNewId(projectId, FileName), FileName, SourceText.From(TestCode), filePath: FileName);
 
             return solution.GetProject(projectId);
         }
 
         protected async Task<ImmutableArray<Diagnostic>> GetDiagnostics(Project project, CancellationToken cancellationToken)
         {
-            var builder = ImmutableArray.CreateBuilder<Diagnostic>();
-
-            var analyzers = GetDiagnosticAnalyzers().ToImmutableArray();
-
             var compilation = await project.GetCompilationAsync(cancellationToken);
 
             var diagnostics = await compilation
                 .WithAnalyzers(analyzers, project.AnalyzerOptions, cancellationToken)
                 .GetAllDiagnosticsAsync(cancellationToken);
 
-            var validDiagnostics = diagnostics.Where(x => !x.Descriptor.CustomTags.Contains(WellKnownDiagnosticTags.Compiler));
-
-            builder.AddRange(validDiagnostics);
-
-            return builder.ToImmutable();
+            return diagnostics
+                .Where(x => !x.Descriptor.CustomTags.Contains(WellKnownDiagnosticTags.Compiler))
+                .ToImmutableArray();
         }
 
         protected void VerifyDiagnostics(ImmutableArray<Diagnostic> actual, DiagnosticResult[] expected)
@@ -80,17 +70,17 @@ namespace Machine.Specifications.Analyzers.Tests
             var matched = MatchDiagnostics(actual, expected);
 
             Verifier.Equal(expected.Length, actual.Length, "Number of expected diagnostics does not match actual diagnostics");
-
+            
             foreach (var (matchedActual, matchedExpected) in matched)
             {
                 if (matchedActual is null && matchedExpected is { })
                 {
-                    Verifier.Fail($"Expected {matchedExpected.Value} but actual diagnostic was not raised");
+                    Verifier.Fail($"Expected '{matchedExpected.Value.Id}' but actual diagnostic was not raised");
                 }
 
                 if (matchedActual is { } && matchedExpected is null)
                 {
-                    Verifier.Fail($"Actual diagnostic {matchedActual} was raised but was not expected");
+                    Verifier.Fail($"Actual diagnostic '{matchedActual.Id}' was raised but was not expected");
                 }
             }
         }

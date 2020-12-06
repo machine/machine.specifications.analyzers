@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +16,9 @@ namespace Machine.Specifications.Analyzers.Tests
         where TAnalyzer : DiagnosticAnalyzer, new()
         where TCodeFix : CodeFixProvider, new()
     {
-        public string FixedCode { get; set; }
+        private ImmutableArray<CodeFixProvider> codeFixProviders = ImmutableArray.Create<CodeFixProvider>(new TCodeFix());
 
-        protected IEnumerable<CodeFixProvider> GetCodeFixProviders()
-        {
-            yield return new TCodeFix();
-        }
+        public string FixedCode { get; set; }
 
         public override async Task RunAsync(CancellationToken cancellationToken = default)
         {
@@ -42,8 +38,6 @@ namespace Machine.Specifications.Analyzers.Tests
 
         private async Task<Project> ApplyCodeFixes(Project project, ImmutableArray<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
-            var codeFixProviders = GetCodeFixProviders().ToArray();
-
             var current = project;
 
             while (diagnostics.Any())
@@ -54,7 +48,7 @@ namespace Machine.Specifications.Analyzers.Tests
 
                 foreach (var diagnostic in fixableDiagnostics)
                 {
-                    var actions = await GetCodeActions(project, codeFixProviders, diagnostic, cancellationToken);
+                    var actions = await GetCodeActions(project, diagnostic, cancellationToken);
 
                     current = await ApplyCodeAction(current, actions, cancellationToken);
                 }
@@ -65,7 +59,7 @@ namespace Machine.Specifications.Analyzers.Tests
             return current;
         }
 
-        private async Task<ImmutableArray<CodeAction>> GetCodeActions(Project project, CodeFixProvider[] codeFixProviders, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async Task<ImmutableArray<CodeAction>> GetCodeActions(Project project, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var actions = ImmutableArray.CreateBuilder<CodeAction>();
 
