@@ -15,11 +15,9 @@ namespace Machine.Specifications.Analyzers.CodeFixes.Naming
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ClassMustBeUpperCodeFixProvider))]
     public class ClassMustBeUpperCodeFixProvider : CodeFixProvider
     {
-        public override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(DiagnosticIds.Naming.ClassMustBeUpper);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticIds.Naming.ClassMustBeUpper);
 
-        public sealed override FixAllProvider GetFixAllProvider() =>
-            WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
