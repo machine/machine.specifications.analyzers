@@ -3,12 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
 
-    <Description>Machine.Specifications is a Context/Specification framework geared towards removing language noise and simplifying tests.</Description>
+    <Description>Roslyn analyzers and code fixes for Machine.Specifications</Description>
     <Authors>Machine Specifications</Authors>
     <PackageTags>mspec;test;unit;testing;context;specification;bdd;tdd;analyzers;roslyn</PackageTags>
-    <PackageReleaseNotes>https://github.com/machine/machine.specifications.analyzers/releases</PackageReleaseNotes>
+    <PackageReleaseNotes>See https://github.com/machine/machine.specifications.analyzers/releases</PackageReleaseNotes>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/machine/machine.specifications.analyzers</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/machine/machine.specifications</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/machine/machine.specifications.analyzers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DevelopmentDependency>true</DevelopmentDependency>
 
