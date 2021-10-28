@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
-using Verify = Machine.Specifications.Analyzers.Tests.Verifiers.CodeFixVerifier<
+using Verify = Machine.Specifications.Analyzers.Tests.CodeFixVerifier<
     Machine.Specifications.Analyzers.Naming.ClassMustBeUpperAnalyzer,
-    Machine.Specifications.Analyzers.CodeFixes.Naming.ClassMustBeUpperCodeFixProvider>;
+    Machine.Specifications.Analyzers.Naming.ClassMustBeUpperCodeFixProvider>;
 
 namespace Machine.Specifications.Analyzers.Tests.Naming
 {

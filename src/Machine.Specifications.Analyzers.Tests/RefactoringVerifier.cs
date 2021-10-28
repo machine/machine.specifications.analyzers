@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
 
-namespace Machine.Specifications.Analyzers.Tests.Verifiers
+namespace Machine.Specifications.Analyzers.Tests
 {
     public static class RefactoringVerifier<TCodeRefactoring>
         where TCodeRefactoring : CodeRefactoringProvider, new()

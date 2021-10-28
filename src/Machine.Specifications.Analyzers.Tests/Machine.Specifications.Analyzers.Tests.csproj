@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Machine.Specifications.Analyzers.CodeFixes\Machine.Specifications.Analyzers.CodeFixes.csproj" />
     <ProjectReference Include="..\Machine.Specifications.Analyzers\Machine.Specifications.Analyzers.csproj" />
   </ItemGroup>
 

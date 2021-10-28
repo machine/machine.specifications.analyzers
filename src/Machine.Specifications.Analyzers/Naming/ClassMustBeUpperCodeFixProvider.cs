@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
 
-namespace Machine.Specifications.Analyzers.CodeFixes.Naming
+namespace Machine.Specifications.Analyzers.Naming
 {
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ClassMustBeUpperCodeFixProvider))]
