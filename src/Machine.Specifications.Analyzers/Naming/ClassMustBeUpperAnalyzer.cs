@@ -15,7 +15,7 @@ namespace Machine.Specifications.Analyzers.Naming
             "Naming",
             DiagnosticSeverity.Error,
             true,
-            "Rename the class to be uppercase",
+            "Rename the class to be uppercase.",
             "http://machine.specs/link");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

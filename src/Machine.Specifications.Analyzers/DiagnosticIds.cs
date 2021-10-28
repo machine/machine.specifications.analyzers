@@ -4,7 +4,7 @@
     {
         public static class Naming
         {
-            public const string ClassMustBeUpper = "MLP1000";
+            public const string ClassMustBeUpper = "MSP1001";
         }
     }
 }

@@ -2,9 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>*$(MSBuildProjectFullPath)*</PackageId>
 
-    <IsPackable>false</IsPackable>
+    <Description>Roslyn analyzers and code fixes for Machine.Specifications</Description>
+    <Authors>Machine Specifications</Authors>
+    <PackageTags>mspec;test;unit;testing;context;specification;bdd;tdd;analyzers;roslyn</PackageTags>
+    <PackageReleaseNotes>See https://github.com/machine/machine.specifications.analyzers/releases</PackageReleaseNotes>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/machine/machine.specifications</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/machine/machine.specifications.analyzers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <DevelopmentDependency>true</DevelopmentDependency>
+
+    <NoWarn>RS2008</NoWarn>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackageItems</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +24,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.11.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../images/icon.png" Pack="true" PackagePath="" Visible="false" />
+    <None Update="*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="tools" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="PackageItems">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\Machine.Specifications.Analyzers.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
 
 </Project>

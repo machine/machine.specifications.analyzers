@@ -2,7 +2,7 @@
 using Xunit;
 using Verify = Machine.Specifications.Analyzers.Tests.CodeFixVerifier<
     Machine.Specifications.Analyzers.Naming.ClassMustBeUpperAnalyzer,
-    Machine.Specifications.Analyzers.CodeFixes.Naming.ClassMustBeUpperCodeFixProvider>;
+    Machine.Specifications.Analyzers.Naming.ClassMustBeUpperCodeFixProvider>;
 
 namespace Machine.Specifications.Analyzers.Tests.Naming
 {
@@ -28,7 +28,7 @@ namespace Machine.Specifications.Analyzers.Tests.Naming
 
     namespace ConsoleApplication1
     {
-        class typename
+        class {|#0:TypeName|}
         {   
         }
     }";
@@ -47,7 +47,9 @@ namespace Machine.Specifications.Analyzers.Tests.Naming
         }
     }";
 
-            var expected = Verify.Diagnostic(DiagnosticIds.Naming.ClassMustBeUpper);
+            var expected = Verify.Diagnostic(DiagnosticIds.Naming.ClassMustBeUpper)
+                .WithLocation(0)
+                .WithArguments("TypeName");
 
             await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
         }
