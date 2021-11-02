@@ -9,7 +9,7 @@ var version = GetGitVersion();
 
 Target("clean", () =>
 {
-    Run("dotnet", "clean");
+    Run("dotnet", "clean --configuration Release");
 
     if (Directory.Exists("artifacts"))
     {
