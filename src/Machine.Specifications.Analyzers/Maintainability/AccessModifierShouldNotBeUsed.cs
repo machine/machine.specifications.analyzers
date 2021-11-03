@@ -11,7 +11,7 @@ namespace Machine.Specifications.Analyzers.Maintainability
     public class AccessModifierShouldNotBeUsed : DiagnosticAnalyzer
     {
         private static readonly DiagnosticDescriptor Rule = new(
-            DiagnosticIds.Naming.AccessModifierShouldNotBeUsed,
+            DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed,
             "Access modifier should not be declared",
             "Element '{0}' should not declare an access modifier",
             DiagnosticCategories.Maintainability,

@@ -11,7 +11,9 @@ namespace Machine.Specifications.Analyzers.Tests
         internal static ImmutableDictionary<string, ReportDiagnostic> NullableWarnings { get; } = GetNullableWarningsFromCompiler();
 
         internal static ReferenceAssemblies MspecAssemblies { get; } = ReferenceAssemblies.Default.AddPackages(
-            ImmutableArray.Create(new PackageIdentity("machine.specifications.core", "2.0.0")));
+            ImmutableArray.Create(
+                new PackageIdentity("machine.specifications", "1.0.0"),
+                new PackageIdentity("machine.specifications.should", "1.0.0")));
 
         public static Solution GetNullableTransform(Solution solution, ProjectId projectId)
         {

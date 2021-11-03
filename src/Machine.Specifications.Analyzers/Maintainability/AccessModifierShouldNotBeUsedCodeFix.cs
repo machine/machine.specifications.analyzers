@@ -14,7 +14,7 @@ namespace Machine.Specifications.Analyzers.Maintainability
     public class AccessModifierShouldNotBeUsedCodeFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(DiagnosticIds.Naming.AccessModifierShouldNotBeUsed);
+            ImmutableArray.Create(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -35,7 +35,7 @@ namespace Machine.Specifications.Analyzers.Maintainability
                     continue;
                 }
 
-                var declaration = FindParentDeclaration(node);
+                var declaration = GetParentDeclaration(node);
 
                 if (declaration == null)
                 {
@@ -48,34 +48,47 @@ namespace Machine.Specifications.Analyzers.Maintainability
             }
         }
 
-        private Task<Document> TransformAsync(Document document, SyntaxNode node, SyntaxNode declaration)
+        private Task<Document> TransformAsync(Document document, SyntaxNode root, SyntaxNode declaration)
         {
-            if (declaration.IsKind(SyntaxKind.ClassDeclaration))
+            var fixedDeclaration = declaration.Kind() switch
             {
-            }
+                SyntaxKind.ClassDeclaration => HandleDeclaration((ClassDeclarationSyntax) declaration),
+                SyntaxKind.FieldDeclaration => HandleDeclaration((FieldDeclarationSyntax) declaration),
+                _ => declaration
+            };
+
+            var fixedRoot = root.ReplaceNode(declaration, fixedDeclaration);
+
+            return Task.FromResult(document.WithSyntaxRoot(fixedRoot));
         }
 
-        private SyntaxNode TransformClassDeclaration(ClassDeclarationSyntax node)
+        private SyntaxNode HandleDeclaration(MemberDeclarationSyntax declaration)
         {
-            if (node.Keyword.IsMissing)
+            if (!declaration.Modifiers.Any())
             {
-                return null;
+                return declaration;
             }
 
-            var modifiers = SyntaxFactory.Token(SyntaxKind.EmptyStatement)
+            var trivia = declaration.Modifiers.First().LeadingTrivia;
 
-            return node
-                .WithModifiers(SyntaxTokenList.Create)
+            return declaration
+                .WithModifiers(SyntaxFactory.TokenList())
+                .WithLeadingTrivia(trivia);
         }
 
-        private SyntaxNode FindParentDeclaration(SyntaxNode node)
+        private SyntaxNode GetParentDeclaration(SyntaxNode declaration)
         {
-            if (node.IsKind(SyntaxKind.ClassDeclaration))
+            while (declaration != null)
             {
-                return node;
+                if (declaration.IsKind(SyntaxKind.ClassDeclaration) || declaration.IsKind(SyntaxKind.FieldDeclaration))
+                {
+                    return declaration;
+                }
+
+                declaration = declaration.Parent;
             }
 
-            return node?.Parent;
+            return null;
         }
     }
 }
