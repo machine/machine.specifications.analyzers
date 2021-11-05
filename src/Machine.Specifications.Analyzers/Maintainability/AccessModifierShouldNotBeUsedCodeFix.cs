@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -71,8 +72,18 @@ namespace Machine.Specifications.Analyzers.Maintainability
 
             var trivia = declaration.Modifiers.First().LeadingTrivia;
 
+            var modifiers = new List<SyntaxToken>();
+
+            foreach (var modifier in declaration.Modifiers)
+            {
+                if (!IsAccessModifer(modifier))
+                {
+                    modifiers.Add(modifier);
+                }
+            }
+
             return declaration
-                .WithModifiers(SyntaxFactory.TokenList())
+                .WithModifiers(SyntaxFactory.TokenList(modifiers))
                 .WithLeadingTrivia(trivia);
         }
 
@@ -89,6 +100,14 @@ namespace Machine.Specifications.Analyzers.Maintainability
             }
 
             return null;
+        }
+
+        private bool IsAccessModifer(SyntaxToken token)
+        {
+            return token.IsKind(SyntaxKind.PublicKeyword) ||
+                   token.IsKind(SyntaxKind.PrivateKeyword) ||
+                   token.IsKind(SyntaxKind.ProtectedKeyword) ||
+                   token.IsKind(SyntaxKind.InternalKeyword);
         }
     }
 }

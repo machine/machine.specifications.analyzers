@@ -197,15 +197,58 @@ namespace ConsoleApplication1
 
             var expected = new[]
             {
-                Verify.Diagnostic()
-                    .WithLocation(0),
+                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                    .WithLocation(0)
+                    .WithArguments("value"),
 
-                Verify.Diagnostic()
-                    .WithLocation(1),
+                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                    .WithLocation(1)
+                    .WithArguments("InnerClass"),
 
-                Verify.Diagnostic()
+                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
                     .WithLocation(2)
+                    .WithArguments("context")
             };
+
+            await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
+        }
+
+        [Fact]
+        public async Task RemovesFieldAccessModifierWithLeadingTrivia()
+        {
+            const string source = @"
+using System;
+using Machine.Specifications;
+
+namespace ConsoleApplication1
+{
+    class SpecsClass
+    {
+        static private string {|#0:value|};
+
+        It should_do_something = () =>
+            true.ShouldBeTrue();
+    }
+}";
+
+            const string fixedSource = @"
+using System;
+using Machine.Specifications;
+
+namespace ConsoleApplication1
+{
+    class SpecsClass
+    {
+        static string {|#0:value|};
+
+        It should_do_something = () =>
+            true.ShouldBeTrue();
+    }
+}";
+
+            var expected = Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                .WithLocation(0)
+                .WithArguments("value");
 
             await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
         }
