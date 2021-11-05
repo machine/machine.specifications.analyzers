@@ -2,7 +2,7 @@
 using Xunit;
 using Verify = Machine.Specifications.Analyzers.Tests.CodeFixVerifier<
     Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsed,
-    Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsedCodeFix>;
+    Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsedCodeFixProvider>;
 
 namespace Machine.Specifications.Analyzers.Tests.Maintainability
 {
@@ -224,7 +224,7 @@ namespace ConsoleApplication1
 {
     class SpecsClass
     {
-        static private string {|#0:value|};
+        static private string [|value|];
 
         It should_do_something = () =>
             true.ShouldBeTrue();
@@ -239,18 +239,14 @@ namespace ConsoleApplication1
 {
     class SpecsClass
     {
-        static string {|#0:value|};
+        static string value;
 
         It should_do_something = () =>
             true.ShouldBeTrue();
     }
 }";
 
-            var expected = Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                .WithLocation(0)
-                .WithArguments("value");
-
-            await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
+            await Verify.VerifyCodeFixAsync(source, fixedSource);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Machine.Specifications.Analyzers.Maintainability
 {
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp)]
-    public class AccessModifierShouldNotBeUsedCodeFix : CodeFixProvider
+    public class AccessModifierShouldNotBeUsedCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed);
