@@ -12,8 +12,8 @@ namespace Machine.Specifications.Analyzers.Tests
 
         internal static ReferenceAssemblies MspecAssemblies { get; } = ReferenceAssemblies.Default.AddPackages(
             ImmutableArray.Create(
-                new PackageIdentity("machine.specifications", "1.0.0"),
-                new PackageIdentity("machine.specifications.should", "1.0.0")));
+                new PackageIdentity("Machine.Specifications", "1.0.0"),
+                new PackageIdentity("Machine.Specifications.Should", "1.0.0")));
 
         public static Solution GetNullableTransform(Solution solution, ProjectId projectId)
         {
