@@ -2,10 +2,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Machine.Specifications.Analyzers.Layout
+namespace Machine.Specifications.Analyzers.Naming
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class SingleLineStatementShouldNotUseBraces : DiagnosticAnalyzer
+    public class ElementNameShouldBeSnakeCasedAnalyzer : DiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 

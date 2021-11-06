@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Machine.Specifications.Analyzers.Layout
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class DelegateShouldNotBeOnSingleLine : DiagnosticAnalyzer
+    public class DelegateShouldNotBeOnSingleLineAnalyzer : DiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
