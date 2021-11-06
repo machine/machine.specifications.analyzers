@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -16,6 +17,11 @@ namespace Machine.Specifications.Analyzers.Maintainability
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed);
+
+        public override FixAllProvider GetFixAllProvider()
+        {
+            return WellKnownFixAllProviders.BatchFixer;
+        }
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -44,7 +50,10 @@ namespace Machine.Specifications.Analyzers.Maintainability
                 }
 
                 context.RegisterCodeFix(
-                    CodeAction.Create("Remove access modifier", _ => TransformAsync(context.Document, root, declaration)),
+                    CodeAction.Create(
+                        "Remove access modifier",
+                        _ => TransformAsync(context.Document, root, declaration),
+                        nameof(AccessModifierShouldNotBeUsedCodeFixProvider)),
                     diagnostic);
             }
         }
@@ -72,15 +81,9 @@ namespace Machine.Specifications.Analyzers.Maintainability
 
             var trivia = declaration.Modifiers.First().LeadingTrivia;
 
-            var modifiers = new List<SyntaxToken>();
-
-            foreach (var modifier in declaration.Modifiers)
-            {
-                if (!IsAccessModifer(modifier))
-                {
-                    modifiers.Add(modifier);
-                }
-            }
+            var modifiers = declaration.Modifiers
+                .Where(x => !IsAccessModifer(x))
+                .ToArray();
 
             return declaration
                 .WithModifiers(SyntaxFactory.TokenList(modifiers))

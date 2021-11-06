@@ -4,6 +4,8 @@
     {
         public const string MspecAssemblyName = "Machine.Specifications";
 
+        public const string MspecCoreAssemblyName = "Machine.Specifications.Core";
+
         public const string MspecNamespace = "Machine.Specifications";
 
         public const string MspecItDelegate = "It";

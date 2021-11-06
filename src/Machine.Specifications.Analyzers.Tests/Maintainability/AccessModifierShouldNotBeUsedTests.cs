@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 using Verify = Machine.Specifications.Analyzers.Tests.CodeFixVerifier<
-    Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsed,
+    Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsedAnalyzer,
     Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsedCodeFixProvider>;
 
 namespace Machine.Specifications.Analyzers.Tests.Maintainability
@@ -225,6 +225,42 @@ namespace ConsoleApplication1
     class SpecsClass
     {
         static private string [|value|];
+
+        It should_do_something = () =>
+            true.ShouldBeTrue();
+    }
+}";
+
+            const string fixedSource = @"
+using System;
+using Machine.Specifications;
+
+namespace ConsoleApplication1
+{
+    class SpecsClass
+    {
+        static string value;
+
+        It should_do_something = () =>
+            true.ShouldBeTrue();
+    }
+}";
+
+            await Verify.VerifyCodeFixAsync(source, fixedSource);
+        }
+
+        [Fact]
+        public async Task RemovesMultipleAccessModifiers()
+        {
+            const string source = @"
+using System;
+using Machine.Specifications;
+
+namespace ConsoleApplication1
+{
+    class SpecsClass
+    {
+        private protected static string [|value|];
 
         It should_do_something = () =>
             true.ShouldBeTrue();

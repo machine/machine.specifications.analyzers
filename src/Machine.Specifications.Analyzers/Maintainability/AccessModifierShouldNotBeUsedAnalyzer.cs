@@ -8,14 +8,14 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Machine.Specifications.Analyzers.Maintainability
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class AccessModifierShouldNotBeUsed : DiagnosticAnalyzer
+    public class AccessModifierShouldNotBeUsedAnalyzer : DiagnosticAnalyzer
     {
         private static readonly DiagnosticDescriptor Rule = new(
             DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed,
             "Access modifier should not be declared",
             "Element '{0}' should not declare an access modifier",
             DiagnosticCategories.Maintainability,
-            DiagnosticSeverity.Error,
+            DiagnosticSeverity.Warning,
             true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Rule);

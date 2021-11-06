@@ -26,9 +26,14 @@ namespace Machine.Specifications.Analyzers
 
         public static bool IsMember(this ITypeSymbol symbol)
         {
-            return symbol.ContainingAssembly?.Name == MetadataNames.MspecAssemblyName &&
+            return symbol.IsMspecAssembly() &&
                    symbol.ContainingNamespace?.ToString() == MetadataNames.MspecNamespace &&
                    symbol.TypeKind == TypeKind.Delegate;
+        }
+
+        private static bool IsMspecAssembly(this ITypeSymbol symbol)
+        {
+            return symbol.ContainingAssembly?.Name is MetadataNames.MspecAssemblyName or MetadataNames.MspecCoreAssemblyName;
         }
     }
 }
