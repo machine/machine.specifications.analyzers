@@ -37,6 +37,7 @@ namespace Machine.Specifications.Analyzers.Tests
         {
             public Test()
             {
+                ReferenceAssemblies = VerifierHelper.MspecAssemblies;
                 SolutionTransforms.Add(VerifierHelper.GetNullableTransform);
             }
         }

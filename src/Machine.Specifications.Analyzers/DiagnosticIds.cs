@@ -6,5 +6,10 @@
         {
             public const string ClassMustBeUpper = "MSP1001";
         }
+
+        public static class Maintainability
+        {
+            public const string AccessModifierShouldNotBeUsed = "MSP2002";
+        }
     }
 }
