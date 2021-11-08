@@ -5,6 +5,10 @@
         public static class Naming
         {
             public const string ElementNameShouldBeSnakeCased = "MSP1001";
+
+            public const string ContextFieldShouldUseSuggestedName = "MSP1002";
+
+            public const string BecauseFieldShouldUseSuggestedName = "MSP1003";
         }
 
         public static class Maintainability

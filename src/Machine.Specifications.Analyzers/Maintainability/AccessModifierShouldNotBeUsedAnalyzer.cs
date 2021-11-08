@@ -34,37 +34,27 @@ namespace Machine.Specifications.Analyzers.Maintainability
         {
             var type = (TypeDeclarationSyntax) context.Node;
 
-            if (!type.IsSpecificationClass(context))
+            if (type.ContainsSpecifications(context))
             {
-                return;
+                CheckAccessModifier(context, type.Identifier, type.Modifiers);
             }
-
-            CheckAccessModifier(context, type.Identifier, type.Modifiers);
         }
 
         private void AnalyzeFieldSyntax(SyntaxNodeAnalysisContext context)
         {
             var field = (FieldDeclarationSyntax) context.Node;
 
-            if (!field.Parent.IsKind(SyntaxKind.ClassDeclaration))
+            if (!field.IsInTypeWithSpecifications(context))
             {
                 return;
             }
 
-            if (field.Parent is not TypeDeclarationSyntax type || !type.IsSpecificationClass(context))
+            var variable = field.GetVariable();
+
+            if (variable != null)
             {
-                return;
+                CheckAccessModifier(context, variable.Identifier, field.Modifiers);
             }
-
-            var variable = field.Declaration.Variables
-                .FirstOrDefault(x => !x.Identifier.IsMissing);
-
-            if (variable == null)
-            {
-                return;
-            }
-
-            CheckAccessModifier(context, variable.Identifier, field.Modifiers);
         }
 
         private void CheckAccessModifier(SyntaxNodeAnalysisContext context, SyntaxToken identifier, SyntaxTokenList modifiers)

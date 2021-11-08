@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
 
@@ -36,19 +35,9 @@ namespace Machine.Specifications.Analyzers.Naming
 
             foreach (var diagnostic in context.Diagnostics)
             {
-                var node = root.FindNode(diagnostic.Location.SourceSpan, true);
-
-                if (node.IsMissing)
-                {
-                    continue;
-                }
-
-                var declaration = GetParentDeclaration(node);
-
-                if (declaration == null)
-                {
-                    continue;
-                }
+                var declaration = root
+                    .FindNode(diagnostic.Location.SourceSpan)
+                    .FirstFieldOrClassAncestor();
 
                 context.RegisterCodeFix(
                     CodeAction.Create(
@@ -61,75 +50,56 @@ namespace Machine.Specifications.Analyzers.Naming
 
         private async Task<Solution> TransformAsync(Document document, SyntaxNode declaration, CancellationToken token)
         {
-            return declaration.Kind() switch
+            return declaration switch
             {
-                SyntaxKind.ClassDeclaration => HandleDeclaration(document, (ClassDeclarationSyntax)declaration, token),
-                SyntaxKind.FieldDeclaration => HandleDeclaration((FieldDeclarationSyntax)declaration),
+                ClassDeclarationSyntax type => await HandleClassDeclaration(document, type, token).ConfigureAwait(false),
+                FieldDeclarationSyntax field => await HandleFieldDeclaration(document, field, token).ConfigureAwait(false),
                 _ => document.Project.Solution
             };
         }
 
-        private async Task<Solution> HandleDeclaration(Document document, ClassDeclarationSyntax type, CancellationToken token)
+        private async Task<Solution> HandleClassDeclaration(Document document, ClassDeclarationSyntax type, CancellationToken token)
         {
-            var parts = type.Identifier.Text.Select((x, i) => i > 0 && char.IsUpper(x)
-                ? "_" + x
-                : x.ToString());
-
-            var name = string.Concat(parts).ToLower();
-
-            var model = await document.GetSemanticModelAsync(token);
-            var symbol = model?.GetDeclaredSymbol(type, token);
-
-            if (symbol == null)
-            {
-                return document.Project.Solution;
-            }
-
-            return await Renamer.RenameSymbolAsync(document.Project.Solution, symbol, name, document.Project.Solution.Workspace.Options, token);
+            return await RenameDeclarationAsync(document, type, type.Identifier, token).ConfigureAwait(false);
         }
 
-        private async Task<Solution> HandleDeclaration(Document document, FieldDeclarationSyntax field, CancellationToken token)
+        private async Task<Solution> HandleFieldDeclaration(Document document, FieldDeclarationSyntax field, CancellationToken token)
         {
-            var variable = field.Declaration.Variables
-                .FirstOrDefault(x => !x.IsMissing);
+            var variable = field.GetVariable();
 
             if (variable == null)
             {
                 return document.Project.Solution;
             }
 
-            var parts = variable.Identifier.Text.Select((x, i) => i > 0 && char.IsUpper(x)
-                ? "_" + x
-                : x.ToString());
+            return await RenameDeclarationAsync(document, variable, variable.Identifier, token)
+                .ConfigureAwait(false);
+        }
 
-            var name = string.Concat(parts).ToLower();
+        private async Task<Solution> RenameDeclarationAsync(Document document, SyntaxNode node, SyntaxToken identifier, CancellationToken token)
+        {
+            var name = GetSnakeCase(identifier.Text);
 
-            var model = await document.GetSemanticModelAsync(token);
-            var symbol = model?.GetDeclaredSymbol(variable, token);
+            var model = await document.GetSemanticModelAsync(token).ConfigureAwait(false);
+            var symbol = model?.GetDeclaredSymbol(node, token);
+            var options = document.Project.Solution.Workspace.Options;
 
             if (symbol == null)
             {
                 return document.Project.Solution;
             }
 
-            return await Renamer.RenameSymbolAsync(document.Project.Solution, symbol, name, document.Project.Solution.Workspace.Options, token);
+            return await Renamer.RenameSymbolAsync(document.Project.Solution, symbol, name, options, token)
+                .ConfigureAwait(false);
         }
 
-        private async Task<Solution> RenameDeclaration(Document document, CancellationToken token)
-
-        private SyntaxNode GetParentDeclaration(SyntaxNode declaration)
+        private string GetSnakeCase(string value)
         {
-            while (declaration != null)
-            {
-                if (declaration.IsKind(SyntaxKind.ClassDeclaration) || declaration.IsKind(SyntaxKind.FieldDeclaration))
-                {
-                    return declaration;
-                }
+            var parts = value.Select((x, i) => i > 0 && char.IsUpper(x)
+                ? "_" + x
+                : x.ToString());
 
-                declaration = declaration.Parent;
-            }
-
-            return null;
+            return string.Concat(parts).ToLower();
         }
     }
 }

@@ -34,42 +34,29 @@ namespace Machine.Specifications.Analyzers.Naming
         {
             var type = (TypeDeclarationSyntax) context.Node;
 
-            if (!type.IsSpecificationClass(context))
+            if (!type.ContainsSpecifications(context))
             {
                 return;
             }
 
-            if (IsSnakeCased(type.Identifier))
+            if (!IsSnakeCased(type.Identifier))
             {
-                return;
+                context.ReportDiagnostic(Diagnostic.Create(Rule, type.Identifier.GetLocation(), type.Identifier));
             }
-
-            context.ReportDiagnostic(Diagnostic.Create(Rule, type.Identifier.GetLocation(), type.Identifier));
         }
 
         private void AnalyzeFieldSyntax(SyntaxNodeAnalysisContext context)
         {
             var field = (FieldDeclarationSyntax) context.Node;
 
-            if (!field.Parent.IsKind(SyntaxKind.ClassDeclaration))
+            if (!field.IsInTypeWithSpecifications(context))
             {
                 return;
             }
 
-            if (field.Parent is not TypeDeclarationSyntax type || !type.IsSpecificationClass(context))
-            {
-                return;
-            }
+            var variable = field.GetVariable();
 
-            var variable = field.Declaration.Variables
-                .FirstOrDefault(x => !x.Identifier.IsMissing);
-
-            if (variable == null)
-            {
-                return;
-            }
-
-            if (IsSnakeCased(variable.Identifier))
+            if (variable == null || IsSnakeCased(variable.Identifier))
             {
                 return;
             }
