@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using static Bullseye.Targets;
 using static SimpleExec.Command;
 
-var version = GetGitVersion();
+var version = await GetGitVersion();
 
 Target("clean", () =>
 {
@@ -14,13 +14,6 @@ Target("clean", () =>
     if (Directory.Exists("artifacts"))
     {
         Directory.Delete("artifacts", true);
-    }
-
-    var filters = Directory.GetFiles(Environment.CurrentDirectory, "*.slnf");
-
-    foreach (var filter in filters)
-    {
-        File.Delete(filter);
     }
 });
 
@@ -31,17 +24,13 @@ Target("restore", DependsOn("clean"), () =>
 
 Target("build", DependsOn("restore"), () =>
 {
-    var solution = GetSolution();
-
-    Run("dotnet", $"build {solution} " +
+    Run("dotnet", "build " +
                   "--no-restore " +
                   "--configuration Release " +
                   $"/p:Version={version.SemVer} " +
                   $"/p:AssemblyVersion={version.AssemblySemVer} " +
                   $"/p:FileVersion={version.AssemblySemFileVer} " +
                   $"/p:InformationalVersion={version.InformationalVersion}");
-
-    File.Delete(solution);
 });
 
 Target("test", DependsOn("build"), () =>
@@ -63,55 +52,18 @@ Target("publish", DependsOn("package"), () =>
 
 Target("default", DependsOn("package"));
 
-RunTargetsAndExit(args);
+await RunTargetsAndExitAsync(args);
 
-static GitVersion GetGitVersion()
+async Task<GitVersion> GetGitVersion()
 {
     Run("dotnet", "tool restore");
 
-    var value = Read("dotnet", "dotnet-gitversion");
+    var (value, _) = await ReadAsync("dotnet", "dotnet-gitversion");
 
     return JsonSerializer.Deserialize<GitVersion>(value);
 }
 
-static string GetSolution()
-{
-    const string name = "Machine.Specifications.Analyzers";
-
-    var solution = new SolutionFilter
-    {
-        Solution = new Solution
-        {
-            Path = $"{name}.sln",
-            Projects = new[]
-            {
-                Path.Combine("src", name, $"{name}.csproj"),
-                Path.Combine("src", $"{name}.Tests", $"{name}.Tests.csproj")
-            }
-        }
-    };
-
-    File.WriteAllText($"{name}.slnf", JsonSerializer.Serialize(solution));
-
-    return $"{name}.slnf";
-}
-
-class SolutionFilter
-{
-    [JsonPropertyName("solution")]
-    public Solution Solution { get; set; }
-}
-
-class Solution
-{
-    [JsonPropertyName("path")]
-    public string Path { get; set; }
-
-    [JsonPropertyName("projects")]
-    public string[] Projects { get; set; }
-}
-
-class GitVersion
+public class GitVersion
 {
     public string SemVer { get; set; }
 
