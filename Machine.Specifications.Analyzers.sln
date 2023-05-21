@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Machine.Specifications.Analyzers", "src\Machine.Specifications.Analyzers\Machine.Specifications.Analyzers.csproj", "{E2893FC5-CC66-4167-83BB-E736A5F712C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Machine.Specifications.Analyzers.Tests", "src\Machine.Specifications.Analyzers.Tests\Machine.Specifications.Analyzers.Tests.csproj", "{65085B70-C451-4263-8108-F883C24B89E4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Machine.Specifications.Analyzers.Vsix", "src\Machine.Specifications.Analyzers.Vsix\Machine.Specifications.Analyzers.Vsix.csproj", "{3102CFFA-B938-4342-B3F6-E9B00685E127}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,17 +41,6 @@ Global
 		{65085B70-C451-4263-8108-F883C24B89E4}.Release|x64.Build.0 = Release|Any CPU
 		{65085B70-C451-4263-8108-F883C24B89E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{65085B70-C451-4263-8108-F883C24B89E4}.Release|x86.Build.0 = Release|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Debug|x64.Build.0 = Debug|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Debug|x86.Build.0 = Debug|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Release|x64.ActiveCfg = Release|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Release|x64.Build.0 = Release|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Release|x86.ActiveCfg = Release|Any CPU
-		{3102CFFA-B938-4342-B3F6-E9B00685E127}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
