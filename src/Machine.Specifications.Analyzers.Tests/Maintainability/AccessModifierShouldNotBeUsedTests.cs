@@ -4,14 +4,14 @@ using Verify = Machine.Specifications.Analyzers.Tests.CodeFixVerifier<
     Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsedAnalyzer,
     Machine.Specifications.Analyzers.Maintainability.AccessModifierShouldNotBeUsedCodeFixProvider>;
 
-namespace Machine.Specifications.Analyzers.Tests.Maintainability
+namespace Machine.Specifications.Analyzers.Tests.Maintainability;
+
+public class AccessModifierShouldNotBeUsedTests
 {
-    public class AccessModifierShouldNotBeUsedTests
+    [Fact]
+    public async Task NoErrorsInValidSource()
     {
-        [Fact]
-        public async Task NoErrorsInValidSource()
-        {
-            const string source = @"
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -32,13 +32,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            await Verify.VerifyAnalyzerAsync(source);
-        }
+        await Verify.VerifyAnalyzerAsync(source);
+    }
 
-        [Fact]
-        public async Task RemovesClassAccessModifier()
-        {
-            const string source = @"
+    [Fact]
+    public async Task RemovesClassAccessModifier()
+    {
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -51,7 +51,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            const string fixedSource = @"
+        const string fixedSource = @"
 using System;
 using Machine.Specifications;
 
@@ -64,17 +64,17 @@ namespace ConsoleApplication1
     }
 }";
 
-            var expected = Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                .WithLocation(0)
-                .WithArguments("SpecsClass");
+        var expected = Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+            .WithLocation(0)
+            .WithArguments("SpecsClass");
 
-            await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
-        }
+        await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
+    }
 
-        [Fact]
-        public async Task RemovesFieldAccessModifier()
-        {
-            const string source = @"
+    [Fact]
+    public async Task RemovesFieldAccessModifier()
+    {
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -87,7 +87,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            const string fixedSource = @"
+        const string fixedSource = @"
 using System;
 using Machine.Specifications;
 
@@ -100,17 +100,17 @@ namespace ConsoleApplication1
     }
 }";
 
-            var expected = Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                .WithLocation(0)
-                .WithArguments("should_do_something");
+        var expected = Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+            .WithLocation(0)
+            .WithArguments("should_do_something");
 
-            await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
-        }
+        await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
+    }
 
-        [Fact]
-        public async Task RemovesFieldAndClassAccessModifiers()
-        {
-            const string source = @"
+    [Fact]
+    public async Task RemovesFieldAndClassAccessModifiers()
+    {
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -123,7 +123,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            const string fixedSource = @"
+        const string fixedSource = @"
 using System;
 using Machine.Specifications;
 
@@ -136,24 +136,24 @@ namespace ConsoleApplication1
     }
 }";
 
-            var expected = new[]
-            {
-                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                    .WithLocation(0)
-                    .WithArguments("SpecsClass"),
-
-                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                    .WithLocation(1)
-                    .WithArguments("should_do_something")
-            };
-
-            await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
-        }
-
-        [Fact]
-        public async Task RemovesInnerFieldAndClassAccessModifiers()
+        var expected = new[]
         {
-            const string source = @"
+            Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                .WithLocation(0)
+                .WithArguments("SpecsClass"),
+
+            Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                .WithLocation(1)
+                .WithArguments("should_do_something")
+        };
+
+        await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
+    }
+
+    [Fact]
+    public async Task RemovesInnerFieldAndClassAccessModifiers()
+    {
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -174,7 +174,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            const string fixedSource = @"
+        const string fixedSource = @"
 using System;
 using Machine.Specifications;
 
@@ -195,28 +195,28 @@ namespace ConsoleApplication1
     }
 }";
 
-            var expected = new[]
-            {
-                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                    .WithLocation(0)
-                    .WithArguments("value"),
-
-                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                    .WithLocation(1)
-                    .WithArguments("InnerClass"),
-
-                Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
-                    .WithLocation(2)
-                    .WithArguments("context")
-            };
-
-            await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
-        }
-
-        [Fact]
-        public async Task RemovesFieldAccessModifierWithLeadingTrivia()
+        var expected = new[]
         {
-            const string source = @"
+            Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                .WithLocation(0)
+                .WithArguments("value"),
+
+            Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                .WithLocation(1)
+                .WithArguments("InnerClass"),
+
+            Verify.Diagnostic(DiagnosticIds.Maintainability.AccessModifierShouldNotBeUsed)
+                .WithLocation(2)
+                .WithArguments("context")
+        };
+
+        await Verify.VerifyCodeFixAsync(source, expected, fixedSource);
+    }
+
+    [Fact]
+    public async Task RemovesFieldAccessModifierWithLeadingTrivia()
+    {
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -231,7 +231,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            const string fixedSource = @"
+        const string fixedSource = @"
 using System;
 using Machine.Specifications;
 
@@ -246,13 +246,13 @@ namespace ConsoleApplication1
     }
 }";
 
-            await Verify.VerifyCodeFixAsync(source, fixedSource);
-        }
+        await Verify.VerifyCodeFixAsync(source, fixedSource);
+    }
 
-        [Fact]
-        public async Task RemovesMultipleAccessModifiers()
-        {
-            const string source = @"
+    [Fact]
+    public async Task RemovesMultipleAccessModifiers()
+    {
+        const string source = @"
 using System;
 using Machine.Specifications;
 
@@ -267,7 +267,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            const string fixedSource = @"
+        const string fixedSource = @"
 using System;
 using Machine.Specifications;
 
@@ -282,7 +282,6 @@ namespace ConsoleApplication1
     }
 }";
 
-            await Verify.VerifyCodeFixAsync(source, fixedSource);
-        }
+        await Verify.VerifyCodeFixAsync(source, fixedSource);
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 
 namespace Machine.Specifications.Analyzers.Tests
 {
@@ -15,17 +14,17 @@ namespace Machine.Specifications.Analyzers.Tests
     {
         public static DiagnosticResult Diagnostic()
         {
-            return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, XUnitVerifier>.Diagnostic();
+            return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic();
         }
 
         public static DiagnosticResult Diagnostic(string diagnosticId)
         {
-            return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, XUnitVerifier>.Diagnostic(diagnosticId);
+            return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(diagnosticId);
         }
 
         public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor)
         {
-            return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, XUnitVerifier>.Diagnostic(descriptor);
+            return CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(descriptor);
         }
 
         public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
@@ -63,7 +62,7 @@ namespace Machine.Specifications.Analyzers.Tests
             await test.RunAsync(CancellationToken.None);
         }
 
-        private class Test : CSharpCodeFixTest<TAnalyzer, TCodeFix, XUnitVerifier>
+        private class Test : CSharpCodeFixTest<TAnalyzer, TCodeFix, DefaultVerifier>
         {
             public Test()
             {

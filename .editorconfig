@@ -6,7 +6,10 @@ root = true
 [*]
 insert_final_newline = true
 trim_trailing_whitespace = true
-
-[*.{cs,ps1}]
 indent_style = space
+
+[*.{xml,csproj,json}]
+indent_size = 2
+
+[*.{cs,ps1,sh}]
 indent_size = 4

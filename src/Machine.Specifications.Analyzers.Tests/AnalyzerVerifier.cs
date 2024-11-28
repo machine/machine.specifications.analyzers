@@ -4,47 +4,45 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 
-namespace Machine.Specifications.Analyzers.Tests
+namespace Machine.Specifications.Analyzers.Tests;
+
+public static class AnalyzerVerifier<TAnalyzer>
+    where TAnalyzer : DiagnosticAnalyzer, new()
 {
-    public static class AnalyzerVerifier<TAnalyzer>
-        where TAnalyzer : DiagnosticAnalyzer, new()
+    public static DiagnosticResult Diagnostic()
     {
-        public static DiagnosticResult Diagnostic()
+        return CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic();
+    }
+
+    public static DiagnosticResult Diagnostic(string diagnosticId)
+    {
+        return CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
+    }
+
+    public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor)
+    {
+        return CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(descriptor);
+    }
+
+    public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
+    {
+        var test = new Test
         {
-            return CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic();
-        }
+            TestCode = source
+        };
 
-        public static DiagnosticResult Diagnostic(string diagnosticId)
+        test.ExpectedDiagnostics.AddRange(expected);
+
+        await test.RunAsync(CancellationToken.None);
+    }
+
+    private class Test : CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
+    {
+        public Test()
         {
-            return CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic(diagnosticId);
-        }
-
-        public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor)
-        {
-            return CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic(descriptor);
-        }
-
-        public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
-        {
-            var test = new Test
-            {
-                TestCode = source
-            };
-
-            test.ExpectedDiagnostics.AddRange(expected);
-
-            await test.RunAsync(CancellationToken.None);
-        }
-
-        private class Test : CSharpAnalyzerTest<TAnalyzer, XUnitVerifier>
-        {
-            public Test()
-            {
-                ReferenceAssemblies = VerifierHelper.MspecAssemblies;
-                SolutionTransforms.Add(VerifierHelper.GetNullableTransform);
-            }
+            ReferenceAssemblies = VerifierHelper.MspecAssemblies;
+            SolutionTransforms.Add(VerifierHelper.GetNullableTransform);
         }
     }
 }
